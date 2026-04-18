@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event & Party Planner</title>
@@ -454,26 +451,18 @@
             document.getElementById('eventLocation').value = event.location;
             document.getElementById('eventDescription').value = event.description;
             document.getElementById('themeSelect').value = event.theme;
-            const colors = {
-                birthday: '#ffeb3b',
-                holiday: '#e91e63',
-                costume: '#9c27b0',
-                sports: '#4caf50',
-                other: '#f4f4f4'
-            };
             if (event.customTheme) {
                 document.body.className = '';
-                document.body.style.backgroundColor = event.customTheme.bg;
                 const buttons = document.querySelectorAll('button');
                 buttons.forEach(btn => btn.style.backgroundColor = event.customTheme.accent);
                 document.getElementById('customBg').value = event.customTheme.bg;
                 document.getElementById('customAccent').value = event.customTheme.accent;
             } else {
                 document.body.className = '';
-                document.body.style.backgroundColor = colors[event.theme] || '#f4f4f4';
+                document.body.style.backgroundColor = '';
                 const buttons = document.querySelectorAll('button');
                 buttons.forEach(btn => btn.style.backgroundColor = '');
-                document.getElementById('customBg').value = '#f4f4f4';
+                document.getElementById('customBg').value = '#0a1628';
                 document.getElementById('customAccent').value = '#28a745';
             }
             renderGuests();
@@ -514,15 +503,8 @@
             const theme = document.getElementById('themeSelect').value;
             events[currentEventIndex].theme = theme;
             events[currentEventIndex].customTheme = null;
-            const colors = {
-                birthday: '#ffeb3b',
-                holiday: '#e91e63',
-                costume: '#9c27b0',
-                sports: '#4caf50',
-                other: '#f4f4f4'
-            };
-            document.body.style.backgroundColor = colors[theme];
             document.body.className = '';
+            document.body.style.backgroundColor = '';
             const buttons = document.querySelectorAll('button');
             buttons.forEach(btn => btn.style.backgroundColor = '');
             saveData();
