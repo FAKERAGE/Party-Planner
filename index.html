@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event & Party Planner</title>
@@ -7,6 +10,7 @@
             margin: 0;
             padding: 20px;
             background-color: #0a1628;
+            color: #e8eaf6;
         }
         #landing-page {
             display: flex;
@@ -15,7 +19,7 @@
             justify-content: center;
             text-align: center;
             min-height: 100vh;
-            position: fixed;
+            position: fixed;    
             top: 0;
             left: 0;
             width: 100%;
@@ -115,16 +119,16 @@
             transform: translateY(-2px);
         }
         .events-list-container {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            background: linear-gradient(135deg, #1a2a4a 0%, #162040 100%);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #2a3a5a;
         }
         .events-list-title {
             font-size: 18px;
             font-weight: 600;
-            color: #2d3748;
+            color: #e8eaf6;
             margin-bottom: 15px;
             text-align: center;
         }
@@ -133,17 +137,18 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: white;
-            border: 1px solid #e2e8f0;
+            background: #1e3050;
+            border: 1px solid #2a3a5a;
             margin-bottom: 10px;
             border-radius: 10px;
             transition: all 0.3s ease;
             cursor: pointer;
+            color: #e8eaf6;
         }
         .event-item:hover {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            background: linear-gradient(135deg, #243660 0%, #1e3050 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .event-item.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -177,12 +182,15 @@
         }
         label {
             margin-top: 10px;
+            color: #b0b8d0;
         }
         input, select, textarea {
             padding: 8px;
             margin-top: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid #2a3a5a;
             border-radius: 4px;
+            background-color: #1e3050;
+            color: #e8eaf6;
         }
         button {
             margin-top: 10px;
@@ -210,9 +218,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #2a3a5a;
             margin-bottom: 10px;
             border-radius: 4px;
+            background: #1e3050;
+            color: #e8eaf6;
         }
         .activity-item {
             cursor: move;
@@ -222,7 +232,7 @@
         }
         #planned-activities {
             min-height: 200px;
-            border: 2px dashed #ccc;
+            border: 2px dashed #2a3a5a;
             padding: 10px;
             margin-top: 20px;
             border-radius: 4px;
