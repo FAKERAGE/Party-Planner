@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event & Party Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #landing-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 500px;
+        }
+        .landing-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .landing-title {
+            font-size: 36px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .landing-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+        .landing-button {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s ease;
+        }
+        .landing-button:hover {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+            transform: translateY(-2px);
+        }
+        @keyframes swooshIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes swooshOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+        }
+        #landing-page.exit {
+            animation: swooshOut 0.6s ease-in-out forwards;
+            pointer-events: none;
+        }
+        #main-app.enter {
+            animation: swooshIn 0.6s ease-in-out forwards;
+        }
+        #main-app {
+            display: none;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        nav button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        nav button:hover, nav button.active {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            transform: translateY(-2px);
+        }
+        .events-list-container {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .events-list-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .event-item:hover {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .event-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+        .event-item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        .event-item-delete {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+            transition: all 0.3s ease;
+        }
+        .event-item-delete:hover {
+            background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.5);
+            transform: translateY(-1px);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        section {
+            display: none;
+        }
+        section.active {
+            display: block;
+        }
+        .guest-list, .activity-list {
+            margin-top: 20px;
+        }
+        .guest-item, .activity-item, .budget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .activity-item {
+            cursor: move;
+        }
+        .activity-item.dragging {
+            opacity: 0.5;
+        }
+        #planned-activities {
+            min-height: 200px;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        #summary {
+            line-height: 1.6;
+        }
+        .theme-birthday { background-color: #ffeaa7; }
+        .theme-holiday { background-color: #fd79a8; }
+        .theme-costume { background-color: #6c5ce7; }
+        .theme-sports { background-color: #00b894; }
+        .theme-other { background-color: #f4f4f4; }
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="landing-page">
+            <div class="landing-emoji">🎉</div>
+            <h1 class="landing-title">Event & Party Planner</h1>
+            <p class="landing-description">Plan your perfect party, hangout, or gathering! Organize guests, manage activities, and track your budget all in one place.</p>
+            <button class="landing-button" onclick="startPlanning()">Start Planning</button>
+        </div>
+        
+        <div id="main-app">
+        <div class="events-list-container">
+            <div class="events-list-title">📋 Your Events</div>
+            <div id="eventsList"></div>
+        </div>
+        <nav>
+            <button onclick="newEvent()">➕ New Event</button>
+            <button onclick="showSection('event-form')">Create Event</button>
+            <button onclick="showSection('themes')">Themes</button>
+            <button onclick="showSection('guest-list')">Guest List</button>
+            <button onclick="showSection('activity-planner')">Activity Planner</button>
+            <button onclick="showSection('budget')">Budget</button>
+            <button onclick="showSection('summary')">Event Summary</button>
+        </nav>
+        
+        <section id="event-form" class="active">
+            <h2>Create Event</h2>
+            <form id="eventForm">
+                <label for="eventName">Event Name:</label>
+                <input type="text" id="eventName" required>
+                
+                <label for="eventDate">Date:</label>
+                <input type="date" id="eventDate" required>
+                
+                <label for="eventLocation">Location:</label>
+                <input type="text" id="eventLocation" required>
+                
+                <label for="eventDescription">Description:</label>
+                <textarea id="eventDescription" rows="4"></textarea>
+                
+                <button type="submit">Save Event</button>
+            </form>
+        </section>
+        
+        <section id="themes">
+            <h2>Choose Theme</h2>
+            <select id="themeSelect" onchange="applyTheme()">
+                <option value="birthday">Birthday</option>
+                <option value="holiday">Holiday</option>
+                <option value="costume">Costume</option>
+                <option value="sports">Sports</option>
+                <option value="other">Other</option>
+            </select>
+            <button onclick="applyTheme()">Apply Theme</button>
+            <h3>Custom Theme</h3>
+            <label for="customBg">Background Color:</label>
+            <input type="color" id="customBg" value="#f4f4f4">
+            <label for="customAccent">Accent Color:</label>
+            <input type="color" id="customAccent" value="#28a745">
+            <button onclick="applyCustomTheme()">Apply Custom Theme</button>
+        </section>
+        
+        <section id="guest-list">
+            <h2>Guest List</h2>
+            <form id="guestForm">
+                <input type="text" id="guestName" placeholder="Guest Name" required>
+                <select id="guestRSVP">
+                    <option value="pending">Pending</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="maybe">Maybe</option>
+                </select>
+                <button type="submit">Add Guest</button>
+            </form>
+            <div class="guest-list" id="guestList"></div>
+        </section>
+        
+        <section id="activity-planner">
+            <h2>Activity Planner</h2>
+            <h3>Available Activities</h3>
+            <div class="activity-list" id="availableActivities">
+                <div class="activity-item" draggable="true" data-activity="Pin the Tail on the Donkey">Pin the Tail on the Donkey</div>
+                <div class="activity-item" draggable="true" data-activity="Musical Chairs">Musical Chairs</div>
+                <div class="activity-item" draggable="true" data-activity="Cake Cutting">Cake Cutting</div>
+                <div class="activity-item" draggable="true" data-activity="Food Stations">Food Stations</div>
+                <div class="activity-item" draggable="true" data-activity="Dance Party">Dance Party</div>
+                <div class="activity-item" draggable="true" data-activity="Treasure Hunt">Treasure Hunt</div>
+                <div class="activity-item" draggable="true" data-activity="Photo Booth">Photo Booth</div>
+                <div class="activity-item" draggable="true" data-activity="Story Time">Story Time</div>
+            </div>
+            <h3>Create Custom Activity</h3>
+            <form id="customActivityForm">
+                <input type="text" id="customActivityName" placeholder="Enter activity name" required>
+                <button type="submit">Add Activity</button>
+            </form>
+            <h3>Planned Activities</h3>
+            <div id="planned-activities"></div>
+        </section>
+        
+        <section id="summary">
+            <h2>Event Summary</h2>
+            <div id="eventSummary"></div>
+        </section>
+        
+        <section id="budget">
+            <h2>Budget</h2>
+            <form id="budgetForm">
+                <label for="budgetItem">Item:</label>
+                <input type="text" id="budgetItem" required>
+                <label for="budgetCost">Cost:</label>
+                <input type="number" id="budgetCost" step="0.01" required>
+                <button type="submit">Add Item</button>
+            </form>
+            <div class="budget-list" id="budgetList"></div>
+            <p>Total: $<span id="totalBudget">0</span></p>
+        </section>
+    </div>
+
+    <script>
+        let events = JSON.parse(localStorage.getItem('events')) || [];
+        let currentEventIndex = -1;
+
+        function loadData() {
+            events = JSON.parse(localStorage.getItem('events')) || [];
+            if (events.length === 0) {
+                const defaultEvent = {
+                    name: 'My Party',
+                    date: '',
+                    location: '',
+                    description: '',
+                    theme: 'birthday',
+                    customTheme: null,
+                    guests: [],
+                    activities: [],
+                    budget: []
+                };
+                events.push(defaultEvent);
+                saveData();
+            }
+            currentEventIndex = 0;
+            selectEvent(0);
+            renderEventsList();
+        }
+
+        function saveData() {
+            localStorage.setItem('events', JSON.stringify(events));
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function startPlanning() {
+            const landing = document.getElementById('landing-page');
+            const main = document.getElementById('main-app');
+            landing.classList.add('exit');
+            setTimeout(() => {
+                landing.style.display = 'none';
+                main.classList.add('enter');
+                main.style.display = 'block';
+            }, 600);
+        }
+
+        function newEvent() {
+            const newEvent = {
+                name: '',
+                date: '',
+                location: '',
+                description: '',
+                theme: 'other',
+                customTheme: null,
+                guests: [],
+                activities: [],
+                budget: []
+            };
+            events.push(newEvent);
+            currentEventIndex = events.length - 1;
+            renderEventsList();
+            showSection('event-form');
+            document.getElementById('eventForm').reset();
+        }
+
+        function renderEventsList() {
+            const list = document.getElementById('eventsList');
+            list.innerHTML = '';
+            events.forEach((event, index) => {
+                const div = document.createElement('div');
+                div.className = 'event-item';
+                div.innerHTML = `
+                    <span>${event.name || 'Unnamed Event'}</span>
+                    <button onclick="selectEvent(${index})">Select</button>
+                    <button onclick="deleteEvent(${index})">Delete</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function selectEvent(index) {
+            currentEventIndex = index;
+            const event = events[index];
+            document.getElementById('eventName').value = event.name;
+            document.getElementById('eventDate').value = event.date;
+            document.getElementById('eventLocation').value = event.location;
+            document.getElementById('eventDescription').value = event.description;
+            document.getElementById('themeSelect').value = event.theme;
+            const colors = {
+                birthday: '#ffeb3b',
+                holiday: '#e91e63',
+                costume: '#9c27b0',
+                sports: '#4caf50',
+                other: '#f4f4f4'
+            };
+            if (event.customTheme) {
+                document.body.className = '';
+                document.body.style.backgroundColor = event.customTheme.bg;
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.style.backgroundColor = event.customTheme.accent);
+                document.getElementById('customBg').value = event.customTheme.bg;
+                document.getElementById('customAccent').value = event.customTheme.accent;
+            } else {
+                document.body.className = '';
+                document.body.style.backgroundColor = colors[event.theme] || '#f4f4f4';
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.style.backgroundColor = '');
+                document.getElementById('customBg').value = '#f4f4f4';
+                document.getElementById('customAccent').value = '#28a745';
+            }
+            renderGuests();
+            renderPlannedActivities();
+            renderBudget();
+            showSection('event-form');
+        }
+
+        function deleteEvent(index) {
+            if (confirm('Delete this event?')) {
+                events.splice(index, 1);
+                if (currentEventIndex === index) {
+                    currentEventIndex = -1;
+                } else if (currentEventIndex > index) {
+                    currentEventIndex--;
+                }
+                renderEventsList();
+                saveData();
+            }
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (currentEventIndex >= 0) {
+                events[currentEventIndex].name = document.getElementById('eventName').value;
+                events[currentEventIndex].date = document.getElementById('eventDate').value;
+                events[currentEventIndex].location = document.getElementById('eventLocation').value;
+                events[currentEventIndex].description = document.getElementById('eventDescription').value;
+                saveData();
+                alert('Event saved!');
+                renderEventsList();
+            } else {
+                alert('Please select or create an event first.');
+            }
+        });
+
+        function applyTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            events[currentEventIndex].theme = theme;
+            events[currentEventIndex].customTheme = null;
+            const colors = {
+                birthday: '#ffeb3b',
+                holiday: '#e91e63',
+                costume: '#9c27b0',
+                sports: '#4caf50',
+                other: '#f4f4f4'
+            };
+            document.body.style.backgroundColor = colors[theme];
+            document.body.className = '';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.style.backgroundColor = '');
+            saveData();
+        }
+
+        function applyCustomTheme() {
+            const bg = document.getElementById('customBg').value;
+            const accent = document.getElementById('customAccent').value;
+            events[currentEventIndex].customTheme = { bg, accent };
+            events[currentEventIndex].theme = 'custom';
+            document.body.className = '';
+            document.body.style.backgroundColor = bg;
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.style.backgroundColor = accent);
+            saveData();
+        }
+
+        document.getElementById('guestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (currentEventIndex >= 0) {
+                const name = document.getElementById('guestName').value;
+                const rsvp = document.getElementById('guestRSVP').value;
+                events[currentEventIndex].guests.push({ name, rsvp });
+                renderGuests();
+                saveData();
+                document.getElementById('guestName').value = '';
+                document.getElementById('guestRSVP').value = 'pending';
+            }
+        });
+
+        function renderGuests() {
+            if (currentEventIndex >= 0) {
+                const guestList = document.getElementById('guestList');
+                guestList.innerHTML = '';
+                events[currentEventIndex].guests.forEach((guest, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'guest-item';
+                    div.innerHTML = `
+                        <span>${guest.name} - ${guest.rsvp}</span>
+                        <button onclick="removeGuest(${index})">Remove</button>
+                    `;
+                    guestList.appendChild(div);
+                });
+            }
+        }
+
+        function removeGuest(index) {
+            if (currentEventIndex >= 0) {
+                events[currentEventIndex].guests.splice(index, 1);
+                renderGuests();
+                saveData();
+            }
+        }
+
+        // Drag and Drop
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.classList.contains('activity-item')) {
+                e.dataTransfer.setData('text/plain', e.target.dataset.activity);
+                e.target.classList.add('dragging');
+            }
+        });
+
+        document.addEventListener('dragend', function(e) {
+            if (e.target.classList.contains('activity-item')) {
+                e.target.classList.remove('dragging');
+            }
+        });
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const activity = e.dataTransfer.getData('text/plain');
+            if (currentEventIndex >= 0 && !events[currentEventIndex].activities.includes(activity)) {
+                events[currentEventIndex].activities.push(activity);
+                renderPlannedActivities();
+                saveData();
+            }
+        }
+
+        function renderPlannedActivities() {
+            if (currentEventIndex >= 0) {
+                const planned = document.getElementById('planned-activities');
+                planned.innerHTML = '';
+                events[currentEventIndex].activities.forEach(activity => {
+                    const div = document.createElement('div');
+                    div.className = 'activity-item';
+                    div.textContent = activity;
+                    div.onclick = () => removeActivity(activity);
+                    planned.appendChild(div);
+                });
+            }
+        }
+
+        function removeActivity(activity) {
+            if (currentEventIndex >= 0) {
+                events[currentEventIndex].activities = events[currentEventIndex].activities.filter(a => a !== activity);
+                renderPlannedActivities();
+                saveData();
+            }
+        }
+
+        document.getElementById('budgetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (currentEventIndex >= 0) {
+                const item = document.getElementById('budgetItem').value;
+                const cost = parseFloat(document.getElementById('budgetCost').value);
+                events[currentEventIndex].budget.push({ item, cost });
+                renderBudget();
+                saveData();
+                document.getElementById('budgetItem').value = '';
+                document.getElementById('budgetCost').value = '';
+            }
+        });
+
+        document.getElementById('customActivityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const activity = document.getElementById('customActivityName').value.trim();
+            if (activity) {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.draggable = true;
+                div.dataset.activity = activity;
+                div.textContent = activity;
+                document.getElementById('availableActivities').appendChild(div);
+                document.getElementById('customActivityName').value = '';
+            }
+        });
+
+        document.getElementById('planned-activities').addEventListener('dragover', allowDrop);
+        document.getElementById('planned-activities').addEventListener('drop', drop);
+
+        function renderBudget() {
+            if (currentEventIndex >= 0) {
+                const budgetList = document.getElementById('budgetList');
+                budgetList.innerHTML = '';
+                let total = 0;
+                events[currentEventIndex].budget.forEach((entry, index) => {
+                    total += entry.cost;
+                    const div = document.createElement('div');
+                    div.className = 'budget-item';
+                    div.innerHTML = `
+                        <span>${entry.item}: $${entry.cost.toFixed(2)}</span>
+                        <button onclick="removeBudgetItem(${index})">Remove</button>
+                    `;
+                    budgetList.appendChild(div);
+                });
+                document.getElementById('totalBudget').textContent = total.toFixed(2);
+            }
+        }
+
+        function removeBudgetItem(index) {
+            if (currentEventIndex >= 0) {
+                events[currentEventIndex].budget.splice(index, 1);
+                renderBudget();
+                saveData();
+            }
+        }
+
+        function updateSummary() {
+            if (currentEventIndex >= 0) {
+                const event = events[currentEventIndex];
+                const summary = document.getElementById('eventSummary');
+                summary.innerHTML = `
+                    <h3>${event.name}</h3>
+                    <p><strong>Date:</strong> ${event.date}</p>
+                    <p><strong>Location:</strong> ${event.location}</p>
+                    <p><strong>Description:</strong> ${event.description}</p>
+                    <p><strong>Theme:</strong> ${event.theme}</p>
+                    <h4>Guests:</h4>
+                    <ul>
+                        ${event.guests.map(g => `<li>${g.name} - ${g.rsvp}</li>`).join('')}
+                    </ul>
+                    <h4>Activities:</h4>
+                    <ul>
+                        ${event.activities.map(a => `<li>${a}</li>`).join('')}
+                    </ul>
+                    <h4>Budget:</h4>
+                    <ul>
+                        ${event.budget.map(b => `<li>${b.item}: $${b.cost.toFixed(2)}</li>`).join('')}
+                    </ul>
+                    <p><strong>Total Budget:</strong> $${event.budget.reduce((sum, b) => sum + b.cost, 0).toFixed(2)}</p>
+                `;
+            }
+        }
+
+        // Update summary when viewing
+        document.querySelector('button[onclick*="summary"]').addEventListener('click', updateSummary);
+
+        loadData();
+    </script>
+</body>
+</html>

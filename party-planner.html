@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event & Party Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background: #0056b3;
+        }
+        section {
+            display: none;
+        }
+        section.active {
+            display: block;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .guest-list, .activity-list {
+            margin-top: 20px;
+        }
+        .guest-item, .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .activity-item {
+            cursor: move;
+        }
+        .activity-item.dragging {
+            opacity: 0.5;
+        }
+        #planned-activities {
+            min-height: 200px;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        #summary {
+            line-height: 1.6;
+        }
+        .theme-birthday { background-color: #ffeaa7; }
+        .theme-holiday { background-color: #fd79a8; }
+        .theme-costume { background-color: #6c5ce7; }
+        .theme-sports { background-color: #00b894; }
+        .theme-other { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Event & Party Planner</h1>
+        <nav>
+            <button onclick="showSection('event-form')">Create Event</button>
+            <button onclick="showSection('themes')">Themes</button>
+            <button onclick="showSection('guest-list')">Guest List</button>
+            <button onclick="showSection('activity-planner')">Activity Planner</button>
+            <button onclick="showSection('summary')">Event Summary</button>
+        </nav>
+        
+        <section id="event-form" class="active">
+            <h2>Create Event</h2>
+            <form id="eventForm">
+                <label for="eventName">Event Name:</label>
+                <input type="text" id="eventName" required>
+                
+                <label for="eventDate">Date:</label>
+                <input type="date" id="eventDate" required>
+                
+                <label for="eventLocation">Location:</label>
+                <input type="text" id="eventLocation" required>
+                
+                <label for="eventDescription">Description:</label>
+                <textarea id="eventDescription" rows="4"></textarea>
+                
+                <button type="submit">Save Event</button>
+            </form>
+        </section>
+        
+        <section id="themes">
+            <h2>Choose Theme</h2>
+            <select id="themeSelect">
+                <option value="birthday">Birthday</option>
+                <option value="holiday">Holiday</option>
+                <option value="costume">Costume</option>
+                <option value="sports">Sports</option>
+                <option value="other">Other</option>
+            </select>
+            <button onclick="applyTheme()">Apply Theme</button>
+        </section>
+        
+        <section id="guest-list">
+            <h2>Guest List</h2>
+            <form id="guestForm">
+                <input type="text" id="guestName" placeholder="Guest Name" required>
+                <select id="guestRSVP">
+                    <option value="pending">Pending</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="maybe">Maybe</option>
+                </select>
+                <button type="submit">Add Guest</button>
+            </form>
+            <div class="guest-list" id="guestList"></div>
+        </section>
+        
+        <section id="activity-planner">
+            <h2>Activity Planner</h2>
+            <h3>Available Activities</h3>
+            <div class="activity-list" id="availableActivities">
+                <div class="activity-item" draggable="true" data-activity="Pin the Tail on the Donkey">Pin the Tail on the Donkey</div>
+                <div class="activity-item" draggable="true" data-activity="Musical Chairs">Musical Chairs</div>
+                <div class="activity-item" draggable="true" data-activity="Cake Cutting">Cake Cutting</div>
+                <div class="activity-item" draggable="true" data-activity="Food Stations">Food Stations</div>
+                <div class="activity-item" draggable="true" data-activity="Dance Party">Dance Party</div>
+                <div class="activity-item" draggable="true" data-activity="Treasure Hunt">Treasure Hunt</div>
+                <div class="activity-item" draggable="true" data-activity="Photo Booth">Photo Booth</div>
+                <div class="activity-item" draggable="true" data-activity="Story Time">Story Time</div>
+            </div>
+            <h3>Planned Activities</h3>
+            <div id="planned-activities" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </section>
+        
+        <section id="summary">
+            <h2>Event Summary</h2>
+            <div id="eventSummary"></div>
+        </section>
+    </div>
+
+    <script>
+        let eventData = {
+            name: '',
+            date: '',
+            location: '',
+            description: '',
+            theme: 'other',
+            guests: [],
+            activities: []
+        };
+
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            eventData.name = document.getElementById('eventName').value;
+            eventData.date = document.getElementById('eventDate').value;
+            eventData.location = document.getElementById('eventLocation').value;
+            eventData.description = document.getElementById('eventDescription').value;
+            alert('Event saved!');
+        });
+
+        function applyTheme() {
+            eventData.theme = document.getElementById('themeSelect').value;
+            document.body.className = 'theme-' + eventData.theme;
+        }
+
+        document.getElementById('guestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('guestName').value;
+            const rsvp = document.getElementById('guestRSVP').value;
+            eventData.guests.push({ name, rsvp });
+            renderGuests();
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestRSVP').value = 'pending';
+        });
+
+        function renderGuests() {
+            const guestList = document.getElementById('guestList');
+            guestList.innerHTML = '';
+            eventData.guests.forEach((guest, index) => {
+                const div = document.createElement('div');
+                div.className = 'guest-item';
+                div.innerHTML = `
+                    <span>${guest.name} - ${guest.rsvp}</span>
+                    <button onclick="removeGuest(${index})">Remove</button>
+                `;
+                guestList.appendChild(div);
+            });
+        }
+
+        function removeGuest(index) {
+            eventData.guests.splice(index, 1);
+            renderGuests();
+        }
+
+        // Drag and Drop
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.classList.contains('activity-item')) {
+                e.dataTransfer.setData('text/plain', e.target.dataset.activity);
+                e.target.classList.add('dragging');
+            }
+        });
+
+        document.addEventListener('dragend', function(e) {
+            if (e.target.classList.contains('activity-item')) {
+                e.target.classList.remove('dragging');
+            }
+        });
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const activity = e.dataTransfer.getData('text/plain');
+            if (!eventData.activities.includes(activity)) {
+                eventData.activities.push(activity);
+                renderPlannedActivities();
+            }
+        }
+
+        function renderPlannedActivities() {
+            const planned = document.getElementById('planned-activities');
+            planned.innerHTML = '';
+            eventData.activities.forEach(activity => {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.textContent = activity;
+                div.onclick = () => removeActivity(activity);
+                planned.appendChild(div);
+            });
+        }
+
+        function removeActivity(activity) {
+            eventData.activities = eventData.activities.filter(a => a !== activity);
+            renderPlannedActivities();
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('eventSummary');
+            summary.innerHTML = `
+                <h3>${eventData.name}</h3>
+                <p><strong>Date:</strong> ${eventData.date}</p>
+                <p><strong>Location:</strong> ${eventData.location}</p>
+                <p><strong>Description:</strong> ${eventData.description}</p>
+                <p><strong>Theme:</strong> ${eventData.theme}</p>
+                <h4>Guests:</h4>
+                <ul>
+                    ${eventData.guests.map(g => `<li>${g.name} - ${g.rsvp}</li>`).join('')}
+                </ul>
+                <h4>Activities:</h4>
+                <ul>
+                    ${eventData.activities.map(a => `<li>${a}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Update summary when viewing
+        document.querySelector('button[onclick*="summary"]').addEventListener('click', updateSummary);
+    </script>
+</body>
+</html>
